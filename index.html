@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="theme-color" content="#000000">
+  <title>Arena Beach Tennis Paraipaba | Agendamento & Gestão em Tempo Real</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Background Ambient Glows -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="container header-inner">
+      <div class="brand" id="brandLogo" title="Beach Tennis Paraipaba">
+        <div class="brand-logo-wrap">
+          <img src="IMG_2630.PNG" alt="Logo Beach Tennis Paraipaba" class="brand-logo-img">
+        </div>
+        <div class="brand-text">
+          <span class="brand-badge">PARAIPABA • CE</span>
+          <h1>Beach Tennis <span class="text-lime">Paraipaba</span></h1>
+        </div>
+      </div>
+
+      <nav class="mode-switcher" role="tablist">
+        <button class="mode-btn active" id="navClientBtn" data-mode="client">
+          <i data-lucide="calendar-check-2"></i>
+          <span>Reservar Quadra</span>
+        </button>
+        <button class="mode-btn" id="navMyBookingsBtn" data-mode="my-bookings">
+          <i data-lucide="ticket"></i>
+          <span>Meus Comprovantes</span>
+        </button>
+        <button class="mode-btn admin-mode-btn hidden" id="navAdminBtn" data-mode="admin">
+          <i data-lucide="shield-check"></i>
+          <span>Painel Admin</span>
+        </button>
+      </nav>
+
+      <div class="header-right-actions">
+        <div class="live-status-pill" id="liveStatusPill" title="Sincronizado em tempo real com Supabase">
+          <span class="pulse-dot" id="livePulseDot"></span>
+          <span class="live-text" id="liveStatusText">Conectando...</span>
+        </div>
+        <button class="icon-btn admin-lock-trigger" id="adminLockBtn" title="Acesso Restrito do Administrador">
+          <i data-lucide="lock"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="container main-container">
+
+    <!-- ==================== CLIENT VIEW: RESERVAR QUADRA ==================== -->
+    <section id="viewClient" class="view-section active">
+      <!-- Hero Banner -->
+      <div class="hero-card">
+        <div class="hero-content">
+          <div class="hero-tag">
+            <i data-lucide="zap"></i>
+            <span>Confirmação Instantânea no Sistema</span>
+          </div>
+          <h2>Garanta seu horário na melhor areia de <span class="text-gradient">Paraipaba</span></h2>
+          <p>Escolha o dia na agenda abaixo, selecione os horários livres em tempo real e receba seu comprovante oficial na hora.</p>
+          <div class="hero-stats">
+            <div class="hero-stat-item">
+              <strong id="heroOpenSlotsCount">0</strong>
+              <span>Horários Livres Hoje</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="hero-stat-item">
+              <strong id="heroPricePerHour">R$ 40,00</strong>
+              <span>Valor por Hora</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="hero-stat-item">
+              <strong>16h às 23h</strong>
+              <span>Horários Fixos & Avulsos</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="court-preview-card">
+            <div class="court-header">
+              <span><i data-lucide="map-pin"></i> Quadra Oficial • Paraipaba</span>
+              <span class="court-badge">Iluminação LED Pro</span>
+            </div>
+            <div class="court-logo-showcase">
+              <img src="IMG_2630.PNG" alt="Beach Tennis Paraipaba Oficial" class="hero-logo-banner">
+            </div>
+            <div class="court-footer">
+              <span><i data-lucide="clock"></i> Funcionamento: <strong id="heroHoursRange">16:00 às 23:00</strong></span>
+              <button class="btn-link" id="openFixedScheduleModalBtn">
+                <i data-lucide="users"></i> Ver Quadro de Horários Fixos
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Date Selector Strip -->
+      <div class="section-block">
+        <div class="section-header">
+          <div>
+            <h3>1. Escolha a Data</h3>
+            <p class="section-subtitle">Navegue pelos dias da semana ou escolha uma data específica no calendário</p>
+          </div>
+          <div class="date-picker-controls">
+            <button class="icon-btn" id="prevWeekBtn" title="Dias anteriores">
+              <i data-lucide="chevron-left"></i>
+            </button>
+            <input type="date" id="customDateInput" class="date-input-native" title="Escolher data específica">
+            <button class="btn-secondary btn-sm" id="todayJumpBtn">Hoje</button>
+            <button class="icon-btn" id="nextWeekBtn" title="Próximos dias">
+              <i data-lucide="chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="days-carousel" id="daysCarousel">
+          <!-- Populated dynamically via app.js -->
+        </div>
+      </div>
+
+      <!-- Time Slots & Booking Panel Grid -->
+      <div class="booking-workspace">
+        <!-- Left: Time Slots Grid -->
+        <div class="slots-panel card-surface">
+          <div class="slots-panel-header">
+            <div>
+              <div class="selected-date-badge" id="selectedDateBadge">Carregando data...</div>
+              <h3 id="selectedDateTitle">Horários do Dia</h3>
+            </div>
+            <div class="slots-legend">
+              <span class="legend-item"><span class="dot dot-available"></span> Disponível</span>
+              <span class="legend-item"><span class="dot dot-selected"></span> Selecionado</span>
+              <span class="legend-item"><span class="dot dot-fixed"></span> Horário Fixo</span>
+              <span class="legend-item"><span class="dot dot-booked"></span> Reservado</span>
+            </div>
+          </div>
+
+          <!-- Filter pills -->
+          <div class="slots-filter-bar">
+            <button class="filter-chip active" data-filter="all">Todos os Horários (16h às 23h)</button>
+            <button class="filter-chip" data-filter="available">Apenas Disponíveis</button>
+            <button class="filter-chip" data-filter="afternoon">16:00 às 18:00</button>
+            <button class="filter-chip" data-filter="night">18:00 às 23:00</button>
+          </div>
+
+          <div id="dayClosedNotice" class="day-closed-banner hidden">
+            <i data-lucide="calendar-x"></i>
+            <div>
+              <h4>Data Fechada ou Indisponível para Reservas</h4>
+              <p id="dayClosedReason">O administrador bloqueou o expediente nesta data.</p>
+            </div>
+          </div>
+
+          <div class="time-slots-grid" id="timeSlotsGrid">
+            <!-- Populated dynamically via app.js -->
+          </div>
+        </div>
+
+        <!-- Right: Sticky Booking Form -->
+        <aside class="booking-sidebar">
+          <div class="booking-form-card card-surface">
+            <div class="booking-card-header">
+              <h3>2. Confirmar Reserva</h3>
+              <p>Preencha seus dados para emissão imediata do comprovante</p>
+            </div>
+
+            <form id="clientBookingForm" novalidate>
+              <!-- Selected Slots Summary -->
+              <div class="selected-slots-box" id="selectedSlotsBox">
+                <div class="empty-selection-state" id="emptySelectionState">
+                  <i data-lucide="mouse-pointer-click"></i>
+                  <span>Clique em um ou mais horários <strong class="text-lime">Disponíveis</strong> ao lado para selecionar</span>
+                </div>
+                <div class="active-selection-list hidden" id="activeSelectionList">
+                  <div class="selection-summary-top">
+                    <span id="selectionDateLabel">Data</span>
+                    <button type="button" class="clear-selection-btn" id="clearSelectionBtn">Limpar</button>
+                  </div>
+                  <div class="selected-pills-wrap" id="selectedPillsWrap"></div>
+                  <div class="selection-price-row">
+                    <span>Duração: <strong id="selectionDurationText">1h</strong></span>
+                    <span class="selection-total-price" id="selectionTotalPrice">R$ 40,00</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="clientName">Seu Nome ou Nome da Turma / Dupla *</label>
+                <div class="input-with-icon">
+                  <i data-lucide="user"></i>
+                  <input type="text" id="clientName" required placeholder="Ex: João Silva / Turma Beach Pro" autocomplete="name">
+                </div>
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="clientPhone">WhatsApp / Telefone *</label>
+                  <div class="input-with-icon">
+                    <i data-lucide="phone"></i>
+                    <input type="tel" id="clientPhone" required placeholder="(85) 99999-9999">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="clientPlayers">Total de Pessoas (Você + acompanhantes) *</label>
+                  <div class="input-with-icon">
+                    <i data-lucide="users"></i>
+                    <select id="clientPlayers">
+                      <option value="1">1 Pessoa (Individual)</option>
+                      <option value="2">2 Pessoas (Você + 1)</option>
+                      <option value="3">3 Pessoas (Você + 2)</option>
+                      <option value="4" selected>4 Pessoas (Você + 3)</option>
+                      <option value="5">5 Pessoas (Você + 4)</option>
+                      <option value="6">6 Pessoas (Você + 5)</option>
+                      <option value="8">8 Pessoas (Turma / Você + 7)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group" id="companionNamesGroup">
+                <label for="clientCompanionsInput">Nomes dos Acompanhantes (Opcional - separados por vírgula)</label>
+                <div class="input-with-icon">
+                  <i data-lucide="user-plus"></i>
+                  <input type="text" id="clientCompanionsInput" placeholder="Ex: Pedro, Lucas, Mateus (gera 1 código para cada)">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="clientPaymentMethod">Forma de Pagamento Preferida *</label>
+                <div class="payment-options-grid">
+                  <label class="payment-radio-card">
+                    <input type="radio" name="paymentMethod" value="PIX" checked>
+                    <span class="radio-card-inner">
+                      <i data-lucide="qr-code"></i>
+                      <span>PIX</span>
+                    </span>
+                  </label>
+                  <label class="payment-radio-card">
+                    <input type="radio" name="paymentMethod" value="Dinheiro">
+                    <span class="radio-card-inner">
+                      <i data-lucide="banknote"></i>
+                      <span>Na Arena</span>
+                    </span>
+                  </label>
+                  <label class="payment-radio-card">
+                    <input type="radio" name="paymentMethod" value="Cartão">
+                    <span class="radio-card-inner">
+                      <i data-lucide="credit-card"></i>
+                      <span>Cartão</span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="clientNotes">Observações (Opcional)</label>
+                <input type="text" id="clientNotes" placeholder="Ex: Preciso de raquete extra / iluminação...">
+              </div>
+
+              <div id="bookingFormError" class="form-error-msg hidden"></div>
+
+              <button type="submit" class="btn-primary btn-block btn-lg" id="submitBookingBtn">
+                <i data-lucide="check-circle-2"></i>
+                <span>Confirmar Horário Agora</span>
+              </button>
+            </form>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ==================== CLIENT VIEW: MEUS COMPROVANTES ==================== -->
+    <section id="viewMyBookings" class="view-section hidden">
+      <div class="card-surface section-padding">
+        <div class="section-header">
+          <div>
+            <h2><i data-lucide="ticket" class="inline-icon text-lime"></i> Consultar Confirmações e Comprovantes</h2>
+            <p class="section-subtitle">Veja as reservas confirmadas neste dispositivo ou pesquise pelo seu nome / código de reserva.</p>
+          </div>
+          <div class="search-box-wrap">
+            <i data-lucide="search"></i>
+            <input type="text" id="searchTicketInput" placeholder="Buscar por nome, telefone ou código (#ABP...)">
+          </div>
+        </div>
+
+        <div id="myTicketsContainer" class="tickets-grid">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== ADMIN VIEW: PAINEL DE GESTÃO ==================== -->
+    <section id="viewAdmin" class="view-section hidden">
+      <!-- Admin Header & Sub-navigation -->
+      <div class="admin-top-bar card-surface">
+        <div class="admin-title-area">
+          <span class="admin-badge"><i data-lucide="shield"></i> GESTÃO INTEGRADA • ACESSO RESTRITO</span>
+          <h2>Painel Administrativo • Beach Tennis Paraipaba</h2>
+        </div>
+        <div class="admin-tabs" role="tablist">
+          <button class="admin-tab-btn active" data-admintab="overview">
+            <i data-lucide="layout-dashboard"></i>
+            <span>Agenda & Pagamentos</span>
+          </button>
+          <button class="admin-tab-btn" data-admintab="availability">
+            <i data-lucide="calendar-cog"></i>
+            <span>Horários & Datas Disponíveis</span>
+          </button>
+          <button class="admin-tab-btn" data-admintab="fixed">
+            <i data-lucide="repeat"></i>
+            <span>Horários Fixos</span>
+          </button>
+          <button class="admin-tab-btn" data-admintab="cashflow">
+            <i data-lucide="wallet"></i>
+            <span>Fluxo de Caixa & Despesas</span>
+          </button>
+          <button class="btn-secondary btn-sm admin-logout-btn" id="adminLogoutBtn" title="Sair do modo administrador e esconder painel">
+            <i data-lucide="log-out"></i>
+            <span>Bloquear Admin</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards (Always visible in Admin) -->
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-income">
+          <div class="kpi-icon"><i data-lucide="trending-up"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Receita Recebida (Paga)</span>
+            <strong class="kpi-value" id="kpiTotalIncome">R$ 0,00</strong>
+            <span class="kpi-sub" id="kpiPendingIncome">R$ 0,00 pendente a receber</span>
+          </div>
+        </div>
+        <div class="kpi-card kpi-expense">
+          <div class="kpi-icon"><i data-lucide="trending-down"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Despesas Registradas</span>
+            <strong class="kpi-value" id="kpiTotalExpense">R$ 0,00</strong>
+            <span class="kpi-sub" id="kpiExpenseCount">0 lançamentos de saída</span>
+          </div>
+        </div>
+        <div class="kpi-card kpi-balance">
+          <div class="kpi-icon"><i data-lucide="landmark"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Saldo Líquido em Caixa</span>
+            <strong class="kpi-value" id="kpiNetBalance">R$ 0,00</strong>
+            <span class="kpi-sub">Entradas Pagas − Despesas</span>
+          </div>
+        </div>
+        <div class="kpi-card kpi-bookings">
+          <div class="kpi-icon"><i data-lucide="calendar-check"></i></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Ocupação daData Selecionada</span>
+            <strong class="kpi-value" id="kpiTodayOccupancy">0 / 0 slots</strong>
+            <span class="kpi-sub" id="kpiSelectedDateLabel">Hoje</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN TAB 1: AGENDA & PAGAMENTOS -->
+      <div id="adminTabOverview" class="admin-tab-panel active">
+        <div class="admin-panel-grid">
+          <div class="card-surface section-padding">
+            <div class="section-header">
+              <div>
+                <h3>Controle de Agendamentos e Pagamentos do Dia</h3>
+                <p class="section-subtitle">Acompanhe quem já pagou (Fixos e Avulsos), dê baixa em pagamentos ou adicione reserva manual</p>
+              </div>
+              <div class="admin-filter-controls">
+                <input type="date" id="adminAgendaDateInput" class="date-input-native">
+                <select id="adminPaymentFilter" class="select-compact">
+                  <option value="all">Todos os Status</option>
+                  <option value="PAGO">Somente Pagos</option>
+                  <option value="PENDENTE">Somente Pendentes</option>
+                </select>
+                <button class="btn-primary btn-sm" id="adminNewManualBookingBtn">
+                  <i data-lucide="plus"></i> Nova Reserva Manual
+                </button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Horário</th>
+                    <th>Cliente / Turma</th>
+                    <th>Tipo</th>
+                    <th>Contato / Info</th>
+                    <th>Valor</th>
+                    <th>Status Pagamento</th>
+                    <th>Ações Rápidas</th>
+                  </tr>
+                </thead>
+                <tbody id="adminBookingsTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN TAB 2: HORÁRIOS & DATAS DISPONÍVEIS -->
+      <div id="adminTabAvailability" class="admin-tab-panel hidden">
+        <div class="admin-split-2">
+          <!-- Left: Global & Daily Operating Hours + Price -->
+          <div class="card-surface section-padding">
+            <h3><i data-lucide="sliders" class="inline-icon text-lime"></i> Configuração Padrão de Horários e Valores</h3>
+            <p class="section-subtitle">Defina o horário de abertura, fechamento e valores que valem para todos os dias automaticamente.</p>
+
+            <form id="adminGlobalConfigForm" class="mt-4">
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="cfgOpenHour">Horário de Abertura</label>
+                  <select id="cfgOpenHour"></select>
+                </div>
+                <div class="form-group">
+                  <label for="cfgCloseHour">Horário de Fechamento</label>
+                  <select id="cfgCloseHour"></select>
+                </div>
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="cfgPriceAvulso">Valor Hora Avulsa (R$)</label>
+                  <input type="number" id="cfgPriceAvulso" step="5" min="0" required>
+                </div>
+                <div class="form-group">
+                  <label for="cfgPriceFixed">Valor Hora Fixo / Mensalista (R$)</label>
+                  <input type="number" id="cfgPriceFixed" step="5" min="0" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="cfgPixKey">Chave PIX da Arena (Exibida no Comprovante)</label>
+                <input type="text" id="cfgPixKey" placeholder="Ex: arenabeachtennisparaipaba@pix.com.br">
+              </div>
+
+              <div class="form-group">
+                <label for="cfgAdminPassword">Senha de Acesso ao Painel Admin</label>
+                <input type="text" id="cfgAdminPassword" placeholder="Padrão: admin123" required>
+              </div>
+
+              <button type="submit" class="btn-primary">
+                <i data-lucide="save"></i> Salvar Configuração Geral
+              </button>
+            </form>
+          </div>
+
+          <!-- Right: Per-Date Slot Availability Manager -->
+          <div class="card-surface section-padding">
+            <div class="section-header">
+              <div>
+                <h3><i data-lucide="calendar-clock" class="inline-icon text-lime"></i> Liberar ou Bloquear Horários por Data</h3>
+                <p class="section-subtitle">Clique nos horários de uma data específica para abrir horários extras ou bloquear para manutenção/torneio.</p>
+              </div>
+            </div>
+
+            <div class="availability-date-bar">
+              <div class="form-group mb-0">
+                <label for="availManagerDate">Data Selecionada:</label>
+                <input type="date" id="availManagerDate" class="date-input-native">
+              </div>
+              <div class="avail-quick-actions">
+                <button type="button" class="btn-secondary btn-sm" id="toggleEntireDayBtn">
+                  <i data-lucide="power"></i> <span id="toggleEntireDayText">Fechar Dia Inteiro</span>
+                </button>
+                <button type="button" class="btn-secondary btn-sm" id="unlockAllDaySlotsBtn">
+                  <i data-lucide="unlock"></i> Liberar Todos os Horários
+                </button>
+              </div>
+            </div>
+
+            <div class="admin-slots-manager-grid" id="adminSlotsManagerGrid">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN TAB 3: HORÁRIOS FIXOS -->
+      <div id="adminTabFixed" class="admin-tab-panel hidden">
+        <div class="admin-split-2-asymmetric">
+          <div class="card-surface section-padding">
+            <div class="section-header">
+              <div>
+                <h3><i data-lucide="repeat" class="inline-icon text-lime"></i> Turmas e Atletas com Horários Fixos</h3>
+                <p class="section-subtitle">Estes horários são reservados automaticamente todas as semanas nos respectivos dias.</p>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Dia da Semana</th>
+                    <th>Horário</th>
+                    <th>Cliente / Turma Fixa</th>
+                    <th>Valor / Aula</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="fixedSchedulesTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card-surface section-padding">
+            <h3>Adicionar Novo Horário Fixo</h3>
+            <p class="section-subtitle">Cadastre um novo mensalista ou turma fixa semanal</p>
+
+            <form id="addFixedScheduleForm" class="mt-4">
+              <div class="form-group">
+                <label for="fixedClientName">Nome do Cliente / Grupo *</label>
+                <input type="text" id="fixedClientName" required placeholder="Ex: BOA TERRA - FELIPE">
+              </div>
+              <div class="form-group">
+                <label for="fixedDayOfWeek">Dia da Semana *</label>
+                <select id="fixedDayOfWeek" required>
+                  <option value="1">Segunda-feira</option>
+                  <option value="2">Terça-feira</option>
+                  <option value="3">Quarta-feira</option>
+                  <option value="4">Quinta-feira</option>
+                  <option value="5">Sexta-feira</option>
+                  <option value="6">Sábado</option>
+                  <option value="0">Domingo</option>
+                </select>
+              </div>
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="fixedStartTime">Início *</label>
+                  <select id="fixedStartTime" required></select>
+                </div>
+                <div class="form-group">
+                  <label for="fixedEndTime">Término *</label>
+                  <select id="fixedEndTime" required></select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="fixedCustomPrice">Valor por Dia Reservado (R$)</label>
+                <input type="number" id="fixedCustomPrice" step="5" min="0" value="40">
+              </div>
+              <button type="submit" class="btn-primary btn-block">
+                <i data-lucide="plus-circle"></i> Cadastrar Horário Fixo
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN TAB 4: FLUXO DE CAIXA & DESPESAS -->
+      <div id="adminTabCashflow" class="admin-tab-panel hidden">
+        <div class="admin-split-2-asymmetric">
+          <!-- Left: Ledger Table (Entradas e Despesas) -->
+          <div class="card-surface section-padding">
+            <div class="section-header">
+              <div>
+                <h3><i data-lucide="arrow-left-right" class="inline-icon text-lime"></i> Livro Caixa (Entradas de Horários & Saídas/Despesas)</h3>
+                <p class="section-subtitle">Histórico unificado de pagamentos confirmados e despesas operacionais da arena</p>
+              </div>
+              <div class="admin-filter-controls">
+                <select id="cashflowTypeFilter" class="select-compact">
+                  <option value="all">Todas Movimentações</option>
+                  <option value="INCOME">Somente Entradas (+)</option>
+                  <option value="EXPENSE">Somente Despesas (-)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th>Descrição</th>
+                    <th>Categoria</th>
+                    <th>Forma</th>
+                    <th>Tipo</th>
+                    <th>Valor</th>
+                    <th>Ação</th>
+                  </tr>
+                </thead>
+                <tbody id="cashflowTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Right: Register Expense or Extra Income Form -->
+          <div class="card-surface section-padding">
+            <h3><i data-lucide="receipt" class="inline-icon text-orange"></i> Registrar Despesa ou Entrada Extra</h3>
+            <p class="section-subtitle">Lance contas de energia, manutenção da areia, compra de bolas, água ou receitas de bar/aluguel de raquete.</p>
+
+            <form id="cashflowEntryForm" class="mt-4">
+              <div class="form-group">
+                <label>Tipo de Lançamento *</label>
+                <div class="transaction-type-toggle">
+                  <label class="type-radio expense-radio">
+                    <input type="radio" name="txType" value="EXPENSE" checked>
+                    <span><i data-lucide="arrow-down-circle"></i> Despesa (Saída)</span>
+                  </label>
+                  <label class="type-radio income-radio">
+                    <input type="radio" name="txType" value="INCOME">
+                    <span><i data-lucide="arrow-up-circle"></i> Receita Extra (Entrada)</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="txDescription">Descrição *</label>
+                <input type="text" id="txDescription" required placeholder="Ex: Conta de Energia LED / Manutenção Areia">
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="txCategory">Categoria *</label>
+                  <select id="txCategory">
+                    <option value="Energia & Iluminação">Energia & Iluminação</option>
+                    <option value="Manutenção de Quadra/Areia">Manutenção de Quadra/Areia</option>
+                    <option value="Materiais (Bolas/Redes/Raquetes)">Materiais (Bolas/Redes/Raquetes)</option>
+                    <option value="Água / Limpeza">Água / Limpeza</option>
+                    <option value="Equipe / Professores">Equipe / Professores</option>
+                    <option value="Bar / Bebidas / Extras">Bar / Bebidas / Extras</option>
+                    <option value="Outros">Outros</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="txAmount">Valor (R$) *</label>
+                  <input type="number" id="txAmount" step="0.01" min="0.01" required placeholder="0,00">
+                </div>
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="txDate">Data *</label>
+                  <input type="date" id="txDate" required>
+                </div>
+                <div class="form-group">
+                  <label for="txMethod">Forma de Pagamento</label>
+                  <select id="txMethod">
+                    <option value="PIX">PIX</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                    <option value="Cartão">Cartão</option>
+                    <option value="Transferência">Transferência</option>
+                  </select>
+                </div>
+              </div>
+
+              <button type="submit" class="btn-primary btn-block">
+                <i data-lucide="plus"></i> Registrar no Fluxo de Caixa
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODAL: CONFIRMAÇÃO DE RESERVA (DENTRO DO SISTEMA) ==================== -->
+  <div id="confirmationModal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card confirmation-receipt-modal">
+      <div class="receipt-top-banner">
+        <div class="success-check-ring">
+          <i data-lucide="check"></i>
+        </div>
+        <span class="receipt-status-pill">HORÁRIO CONFIRMADO NO SISTEMA</span>
+        <h3>Reserva Garantida com Sucesso!</h3>
+        <p>Seu horário já foi atualizado em tempo real na agenda da <strong>Arena Beach Tennis Paraipaba</strong>.</p>
+      </div>
+
+      <div class="receipt-body" id="receiptPrintableArea">
+        <div class="receipt-code-row">
+          <div>
+            <span class="receipt-meta-label">SEU CÓDIGO PRINCIPAL (TITULAR)</span>
+            <strong class="receipt-code" id="modalReceiptCode">#ABP-0000</strong>
+          </div>
+          <div class="receipt-stamp">CONFIRMADO</div>
+        </div>
+
+        <div class="receipt-participants-box" id="modalParticipantsBox">
+          <div class="participants-box-header">
+            <i data-lucide="users"></i>
+            <span>Códigos Individuais Gerados (<strong id="modalParticipantsCount">4 Pessoas</strong>):</span>
+          </div>
+          <div class="participants-codes-grid" id="modalParticipantCodesList">
+            <!-- Populated dynamically with sequential codes (e.g. #ABP-5757, #ABP-5758...) -->
+          </div>
+        </div>
+
+        <div class="receipt-details-grid">
+          <div class="receipt-detail-item">
+            <span class="detail-label"><i data-lucide="user"></i> Atleta / Turma</span>
+            <strong id="modalReceiptName">-</strong>
+          </div>
+          <div class="receipt-detail-item">
+            <span class="detail-label"><i data-lucide="phone"></i> Contato</span>
+            <strong id="modalReceiptPhone">-</strong>
+          </div>
+          <div class="receipt-detail-item">
+            <span class="detail-label"><i data-lucide="calendar"></i> Data Reservada</span>
+            <strong id="modalReceiptDate">-</strong>
+          </div>
+          <div class="receipt-detail-item">
+            <span class="detail-label"><i data-lucide="clock"></i> Horário(s)</span>
+            <strong id="modalReceiptSlots" class="text-lime">-</strong>
+          </div>
+          <div class="receipt-detail-item">
+            <span class="detail-label"><i data-lucide="credit-card"></i> Pagamento</span>
+            <strong id="modalReceiptPayment">-</strong>
+          </div>
+          <div class="receipt-detail-item">
+            <span class="detail-label"><i data-lucide="banknote"></i> Valor Total</span>
+            <strong id="modalReceiptTotal" class="receipt-price">-</strong>
+          </div>
+        </div>
+
+        <div class="receipt-pix-box" id="modalPixBox">
+          <div class="pix-box-header">
+            <i data-lucide="qr-code"></i>
+            <span>Chave PIX da Arena para Pagamento Rápido:</span>
+          </div>
+          <div class="pix-copy-row">
+            <code id="modalPixKeyText">arenabeachtennisparaipaba@pix.com.br</code>
+            <button type="button" class="btn-secondary btn-xs" id="copyPixKeyBtn">
+              <i data-lucide="copy"></i> Copiar PIX
+            </button>
+          </div>
+        </div>
+
+        <div class="receipt-Timestamp" id="modalReceiptTimestamp">
+          Emitido em: --
+        </div>
+      </div>
+
+      <div class="receipt-actions">
+        <button type="button" class="btn-secondary" id="printReceiptBtn">
+          <i data-lucide="printer"></i> Imprimir / Salvar PDF
+        </button>
+        <button type="button" class="btn-primary" id="closeConfirmationModalBtn">
+          <i data-lucide="check-circle"></i> Concluir e Voltar à Agenda
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: QUADRO DE HORÁRIOS FIXOS ==================== -->
+  <div id="fixedScheduleModal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div>
+          <h3><i data-lucide="calendar-heart" class="inline-icon text-lime"></i> Quadro Oficial de Horários Fixos</h3>
+          <p class="section-subtitle">Turmas e atletas com horários semanais fixos na Arena Beach Tennis Paraipaba</p>
+        </div>
+        <button class="icon-btn" id="closeFixedModalBtn"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="fixed-cards-showcase" id="publicFixedShowcase">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: LOGIN RESTRITO DO ADMINISTRADOR ==================== -->
+  <div id="adminAuthModal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card admin-auth-modal-card">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="admin-lock-badge">
+            <i data-lucide="shield-lock"></i>
+          </div>
+          <div>
+            <h3>Acesso Restrito • Administração</h3>
+            <p class="section-subtitle">Área exclusiva da gestão Beach Tennis Paraipaba</p>
+          </div>
+        </div>
+        <button class="icon-btn" id="closeAdminAuthModalBtn" type="button"><i data-lucide="x"></i></button>
+      </div>
+      <form id="adminAuthForm">
+        <div class="form-group">
+          <label for="adminPasswordInput">Senha do Administrador *</label>
+          <div class="input-with-icon">
+            <i data-lucide="key-round"></i>
+            <input type="password" id="adminPasswordInput" required placeholder="Digite a senha de acesso..." autocomplete="current-password">
+          </div>
+        </div>
+        <div id="adminAuthError" class="form-error-msg hidden">
+          Senha incorreta. Somente o administrador autorizado possui acesso.
+        </div>
+        <div class="admin-auth-actions">
+          <button type="button" class="btn-secondary" id="cancelAdminAuthBtn">Cancelar</button>
+          <button type="submit" class="btn-primary">
+            <i data-lucide="unlock"></i> Liberar Painel Admin
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Mobile Sticky Bottom Checkout Bar -->
+  <div id="mobileStickyBookingBar" class="mobile-sticky-bar hidden">
+    <div class="mobile-sticky-info">
+      <span class="mobile-sticky-count" id="mobileStickyCount">1 horário selecionado</span>
+      <strong class="mobile-sticky-price" id="mobileStickyPrice">R$ 40,00</strong>
+    </div>
+    <button type="button" class="btn-primary btn-sm" id="mobileStickyJumpBtn">
+      <span>Finalizar Reserva</span>
+      <i data-lucide="arrow-down"></i>
+    </button>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
