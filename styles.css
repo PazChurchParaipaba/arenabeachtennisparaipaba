@@ -43,14 +43,22 @@
   padding: 0;
 }
 
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+  overscroll-behavior-x: none;
+}
+
 body {
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   background-color: var(--bg-dark);
   color: var(--text-main);
   line-height: 1.5;
   min-height: 100vh;
-  overflow-x: hidden;
   position: relative;
+  -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, .brand-text h1, .kpi-value, .receipt-code {
@@ -1824,162 +1832,397 @@ select:focus {
   .booking-workspace,
   .admin-split-2,
   .admin-split-2-asymmetric {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero-card > *,
+  .booking-workspace > *,
+  .admin-split-2 > *,
+  .admin-split-2-asymmetric > * {
+    min-width: 0;
+    max-width: 100%;
   }
 
   .kpi-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .booking-sidebar {
     position: static;
+    width: 100%;
   }
 }
 
 @media (max-width: 768px) {
+  .ambient-glow {
+    width: 240px;
+    height: 240px;
+    filter: blur(90px);
+    opacity: 0.16;
+  }
+
   .container {
+    width: 100%;
+    max-width: 100%;
     padding: 0 14px;
   }
 
+  .main-container {
+    padding-top: 16px;
+    padding-bottom: 100px;
+  }
+
+  /* Header Mobile: Clean 2-Row Native App Bar */
   .app-header {
     padding: 10px 0;
   }
 
   .header-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
     gap: 10px;
   }
 
+  .brand {
+    gap: 10px;
+    min-width: 0;
+  }
+
   .brand-logo-wrap {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  .brand-badge {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+  }
+
+  .brand-text {
+    min-width: 0;
   }
 
   .brand-text h1 {
-    font-size: 1.08rem;
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .header-right-actions {
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .live-status-pill {
+    padding: 4px 9px;
+    font-size: 0.68rem;
+    gap: 5px;
+  }
+
+  .pulse-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .admin-lock-trigger {
+    width: 32px;
+    height: 32px;
   }
 
   .mode-switcher {
-    order: 3;
+    grid-column: 1 / -1;
     width: 100%;
-    justify-content: space-between;
-    overflow-x: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    gap: 4px;
+    padding: 4px;
+    border-radius: 12px;
   }
 
   .mode-btn {
-    flex: 1;
     justify-content: center;
-    padding: 9px 10px;
-    font-size: 0.8rem;
+    padding: 9px 8px;
+    font-size: 0.78rem;
+    border-radius: 9px;
     white-space: nowrap;
+    gap: 6px;
   }
 
+  .mode-btn svg {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+  }
+
+  /* Hero Mobile: Compact & Cohesive */
   .hero-card {
-    padding: 20px 16px;
-    gap: 18px;
-    margin-bottom: 20px;
+    padding: 18px 16px;
+    gap: 16px;
+    margin-bottom: 18px;
+    border-radius: 18px;
+  }
+
+  .hero-tag {
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    margin-bottom: 10px;
   }
 
   .hero-content h2 {
-    font-size: 1.5rem;
+    font-size: 1.35rem;
+    line-height: 1.22;
+    margin-bottom: 8px;
   }
 
   .hero-content p {
-    font-size: 0.88rem;
-    margin-bottom: 16px;
+    font-size: 0.84rem;
+    line-height: 1.45;
+    margin-bottom: 14px;
   }
 
   .hero-stats {
-    gap: 14px;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 10px 8px;
+    text-align: center;
   }
 
   .hero-stat-item strong {
-    font-size: 1.15rem;
+    font-size: 0.98rem;
+  }
+
+  .hero-stat-item span {
+    font-size: 0.66rem;
+    display: block;
+    line-height: 1.2;
+    margin-top: 2px;
   }
 
   .stat-divider {
     display: none;
   }
 
+  .court-preview-card {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .court-header {
+    font-size: 0.74rem;
+    margin-bottom: 10px;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .court-badge {
+    font-size: 0.66rem;
+    padding: 2px 8px;
+  }
+
   .court-logo-showcase {
-    height: 135px;
+    height: 115px;
   }
 
   .hero-logo-banner {
-    max-height: 125px;
+    max-height: 105px;
+  }
+
+  .court-footer {
+    margin-top: 10px;
+    font-size: 0.75rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  /* Section 1: Date Picker & Days Carousel */
+  .section-block {
+    margin-bottom: 18px;
   }
 
   .section-header {
     flex-direction: column;
     align-items: stretch;
-    gap: 12px;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .section-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .section-subtitle {
+    font-size: 0.8rem;
   }
 
   .date-picker-controls {
     width: 100%;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr) auto 38px;
+    gap: 6px;
+    align-items: center;
   }
 
   .date-input-native {
-    flex: 1;
+    width: 100%;
     min-width: 0;
+    padding: 8px 10px;
+    font-size: 0.85rem !important;
+    min-height: 38px !important;
   }
 
   .days-carousel {
     display: flex;
+    width: 100%;
+    max-width: 100%;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
     gap: 8px;
-    padding-bottom: 8px;
+    padding-bottom: 4px;
+  }
+
+  .days-carousel::-webkit-scrollbar {
+    display: none;
   }
 
   .day-card {
-    min-width: 96px;
-    flex: 0 0 96px;
+    min-width: 78px;
+    flex: 0 0 78px;
     scroll-snap-align: start;
-    padding: 12px 8px;
+    padding: 10px 6px;
+    border-radius: 12px;
+  }
+
+  .day-card .day-weekday {
+    font-size: 0.68rem;
+  }
+
+  .day-card .day-number {
+    font-size: 1.3rem;
+  }
+
+  .day-card .day-month {
+    font-size: 0.68rem;
+    margin-bottom: 6px;
+  }
+
+  .day-card .day-slots-pill {
+    font-size: 0.64rem;
+    padding: 2px 6px;
+  }
+
+  /* Section 2: Slots Panel & Booking Form */
+  .booking-workspace {
+    gap: 16px;
   }
 
   .slots-panel,
   .booking-form-card,
   .section-padding {
-    padding: 16px;
+    padding: 16px 14px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .slots-panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .slots-panel-header h3 {
+    font-size: 1.08rem;
+  }
+
+  .slots-legend {
+    gap: 10px;
+    font-size: 0.72rem;
+    width: 100%;
   }
 
   .slots-filter-bar {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    margin-bottom: 14px;
     padding-bottom: 12px;
+    overflow: visible;
   }
 
   .filter-chip {
+    width: 100%;
+    text-align: center;
+    padding: 7px 8px;
+    font-size: 0.74rem;
     white-space: nowrap;
-    flex-shrink: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .time-slots-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
   }
 
   .slot-card {
-    padding: 12px;
-    min-height: 98px;
+    padding: 11px 10px;
+    min-height: 90px;
+    border-radius: 12px;
+    gap: 8px;
+  }
+
+  .slot-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
   }
 
   .slot-time {
-    font-size: 0.92rem;
+    font-size: 0.86rem;
+  }
+
+  .slot-badge {
+    font-size: 0.6rem;
+    padding: 2px 6px;
+  }
+
+  .slot-owner {
+    font-size: 0.76rem;
+  }
+
+  .slot-sub {
+    font-size: 0.68rem;
+  }
+
+  .form-row-2 {
+    grid-template-columns: 1fr;
+    gap: 0;
   }
 
   .search-box-wrap {
-    min-width: 100%;
+    min-width: 0;
     width: 100%;
   }
 
   .tickets-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .participants-codes-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   /* Prevent iOS auto-zoom on form focus by keeping 16px font-size on mobile */
@@ -1990,40 +2233,62 @@ select:focus {
   input[type="password"],
   select {
     font-size: 16px;
-    min-height: 46px;
+    min-height: 44px;
+    max-width: 100%;
   }
 
+  /* Admin Mobile Adjustments */
   .admin-top-bar {
-    padding: 16px;
+    padding: 14px;
   }
 
   .admin-tabs {
     width: 100%;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    padding-bottom: 4px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
   }
 
-  .admin-tab-btn {
+  .admin-tab-btn,
+  .admin-logout-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 8px 8px;
+    font-size: 0.75rem;
     white-space: nowrap;
-    flex-shrink: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
+  .kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .kpi-card {
+    padding: 14px;
+  }
+
+  .kpi-value {
+    font-size: 1.25rem;
+  }
+
+  /* Mobile Sticky Checkout Bar */
   .mobile-sticky-bar {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     z-index: 90;
-    background: rgba(10, 10, 10, 0.96);
+    background: rgba(8, 8, 8, 0.96);
     backdrop-filter: blur(14px);
     border-top: 1.5px solid var(--lime-primary);
-    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.85);
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.9);
   }
 
   .mobile-sticky-info {
@@ -2032,57 +2297,56 @@ select:focus {
   }
 
   .mobile-sticky-count {
-    font-size: 0.74rem;
+    font-size: 0.72rem;
     color: var(--text-secondary);
     font-weight: 600;
   }
 
   .mobile-sticky-price {
     font-family: 'Outfit', sans-serif;
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     font-weight: 800;
     color: var(--lime-primary);
   }
 
-  .main-container {
-    padding-bottom: 95px;
-  }
-
   .toast-container {
-    left: 14px;
-    right: 14px;
-    bottom: 82px;
+    left: 12px;
+    right: 12px;
+    bottom: 78px;
   }
 }
 
-@media (max-width: 480px) {
-  .kpi-grid,
-  .form-row-2,
-  .receipt-details-grid,
+@media (max-width: 390px) {
   .time-slots-grid {
     grid-template-columns: 1fr;
   }
 
-  .hero-content h2 {
-    font-size: 1.38rem;
+  .slot-top {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .modal-overlay {
-    padding: 10px;
+    padding: 8px;
     align-items: flex-end;
   }
 
   .modal-card {
-    border-radius: 20px 20px 14px 14px;
-    max-height: 90vh;
+    border-radius: 18px 18px 12px 12px;
+    max-height: 92vh;
+  }
+
+  .receipt-details-grid {
+    grid-template-columns: 1fr;
   }
 
   .receipt-body {
-    padding: 16px;
+    padding: 14px;
   }
 
   .receipt-actions {
-    padding: 0 16px 16px;
+    padding: 0 14px 14px;
     flex-direction: column;
   }
 
