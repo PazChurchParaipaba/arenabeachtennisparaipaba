@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
@@ -7,11 +8,14 @@
   <title>Arena Beach Tennis Paraipaba | Agendamento & Gestão em Tempo Real</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
   <!-- Background Ambient Glows -->
   <div class="ambient-glow glow-1"></div>
@@ -69,8 +73,9 @@
             <i data-lucide="zap"></i>
             <span>Confirmação Instantânea no Sistema</span>
           </div>
-          <h2>Garanta seu horário na melhor areia de <span class="text-gradient">Paraipaba</span></h2>
-          <p>Escolha o dia na agenda abaixo, selecione os horários livres em tempo real e receba seu comprovante oficial na hora.</p>
+          <h2>Garanta seu horário na melhor arena de <span class="text-gradient">Paraipaba</span></h2>
+          <p>Escolha o dia na agenda abaixo, selecione os horários livres em tempo real e receba seu comprovante oficial
+            na hora.</p>
           <div class="hero-stats">
             <div class="hero-stat-item">
               <strong id="heroOpenSlotsCount">0</strong>
@@ -98,7 +103,8 @@
               <img src="IMG_2630.PNG" alt="Beach Tennis Paraipaba Oficial" class="hero-logo-banner">
             </div>
             <div class="court-footer">
-              <span><i data-lucide="clock"></i> Funcionamento: <strong id="heroHoursRange">16:00 às 23:00</strong></span>
+              <span><i data-lucide="clock"></i> Funcionamento: <strong id="heroHoursRange">16:00 às
+                  23:00</strong></span>
               <button class="btn-link" id="openFixedScheduleModalBtn">
                 <i data-lucide="users"></i> Ver Quadro de Horários Fixos
               </button>
@@ -182,7 +188,8 @@
               <div class="selected-slots-box" id="selectedSlotsBox">
                 <div class="empty-selection-state" id="emptySelectionState">
                   <i data-lucide="mouse-pointer-click"></i>
-                  <span>Clique em um ou mais horários <strong class="text-lime">Disponíveis</strong> ao lado para selecionar</span>
+                  <span>Clique em um ou mais horários <strong class="text-lime">Disponíveis</strong> ao lado para
+                    selecionar</span>
                 </div>
                 <div class="active-selection-list hidden" id="activeSelectionList">
                   <div class="selection-summary-top">
@@ -201,7 +208,8 @@
                 <label for="clientName">Seu Nome ou Nome da Turma / Dupla *</label>
                 <div class="input-with-icon">
                   <i data-lucide="user"></i>
-                  <input type="text" id="clientName" required placeholder="Ex: João Silva / Turma Beach Pro" autocomplete="name">
+                  <input type="text" id="clientName" required placeholder="Ex: João Silva / Turma Beach Pro"
+                    autocomplete="name">
                 </div>
               </div>
 
@@ -234,7 +242,8 @@
                 <label for="clientCompanionsInput">Nomes dos Acompanhantes (Opcional - separados por vírgula)</label>
                 <div class="input-with-icon">
                   <i data-lucide="user-plus"></i>
-                  <input type="text" id="clientCompanionsInput" placeholder="Ex: Pedro, Lucas, Mateus (gera 1 código para cada)">
+                  <input type="text" id="clientCompanionsInput"
+                    placeholder="Ex: Pedro, Lucas, Mateus (gera 1 código para cada)">
                 </div>
               </div>
 
@@ -288,7 +297,8 @@
         <div class="section-header">
           <div>
             <h2><i data-lucide="ticket" class="inline-icon text-lime"></i> Consultar Confirmações e Comprovantes</h2>
-            <p class="section-subtitle">Veja as reservas confirmadas neste dispositivo ou pesquise pelo seu nome / código de reserva.</p>
+            <p class="section-subtitle">Veja as reservas confirmadas neste dispositivo ou pesquise pelo seu nome /
+              código de reserva.</p>
           </div>
           <div class="search-box-wrap">
             <i data-lucide="search"></i>
@@ -327,7 +337,8 @@
             <i data-lucide="wallet"></i>
             <span>Fluxo de Caixa & Despesas</span>
           </button>
-          <button class="btn-secondary btn-sm admin-logout-btn" id="adminLogoutBtn" title="Sair do modo administrador e esconder painel">
+          <button class="btn-secondary btn-sm admin-logout-btn" id="adminLogoutBtn"
+            title="Sair do modo administrador e esconder painel">
             <i data-lucide="log-out"></i>
             <span>Bloquear Admin</span>
           </button>
@@ -377,7 +388,8 @@
             <div class="section-header">
               <div>
                 <h3>Controle de Agendamentos e Pagamentos do Dia</h3>
-                <p class="section-subtitle">Acompanhe quem já pagou (Fixos e Avulsos), dê baixa em pagamentos ou adicione reserva manual</p>
+                <p class="section-subtitle">Acompanhe quem já pagou (Fixos e Avulsos), dê baixa em pagamentos ou
+                  adicione reserva manual</p>
               </div>
               <div class="admin-filter-controls">
                 <input type="date" id="adminAgendaDateInput" class="date-input-native">
@@ -419,8 +431,10 @@
         <div class="admin-split-2">
           <!-- Left: Global & Daily Operating Hours + Price -->
           <div class="card-surface section-padding">
-            <h3><i data-lucide="sliders" class="inline-icon text-lime"></i> Configuração Padrão de Horários e Valores</h3>
-            <p class="section-subtitle">Defina o horário de abertura, fechamento e valores que valem para todos os dias automaticamente.</p>
+            <h3><i data-lucide="sliders" class="inline-icon text-lime"></i> Configuração Padrão de Horários e Valores
+            </h3>
+            <p class="section-subtitle">Defina o horário de abertura, fechamento e valores que valem para todos os dias
+              automaticamente.</p>
 
             <form id="adminGlobalConfigForm" class="mt-4">
               <div class="form-row-2">
@@ -465,8 +479,10 @@
           <div class="card-surface section-padding">
             <div class="section-header">
               <div>
-                <h3><i data-lucide="calendar-clock" class="inline-icon text-lime"></i> Liberar ou Bloquear Horários por Data</h3>
-                <p class="section-subtitle">Clique nos horários de uma data específica para abrir horários extras ou bloquear para manutenção/torneio.</p>
+                <h3><i data-lucide="calendar-clock" class="inline-icon text-lime"></i> Liberar ou Bloquear Horários por
+                  Data</h3>
+                <p class="section-subtitle">Clique nos horários de uma data específica para abrir horários extras ou
+                  bloquear para manutenção/torneio.</p>
               </div>
             </div>
 
@@ -499,7 +515,8 @@
             <div class="section-header">
               <div>
                 <h3><i data-lucide="repeat" class="inline-icon text-lime"></i> Turmas e Atletas com Horários Fixos</h3>
-                <p class="section-subtitle">Estes horários são reservados automaticamente todas as semanas nos respectivos dias.</p>
+                <p class="section-subtitle">Estes horários são reservados automaticamente todas as semanas nos
+                  respectivos dias.</p>
               </div>
             </div>
 
@@ -571,8 +588,10 @@
           <div class="card-surface section-padding">
             <div class="section-header">
               <div>
-                <h3><i data-lucide="arrow-left-right" class="inline-icon text-lime"></i> Livro Caixa (Entradas de Horários & Saídas/Despesas)</h3>
-                <p class="section-subtitle">Histórico unificado de pagamentos confirmados e despesas operacionais da arena</p>
+                <h3><i data-lucide="arrow-left-right" class="inline-icon text-lime"></i> Livro Caixa (Entradas de
+                  Horários & Saídas/Despesas)</h3>
+                <p class="section-subtitle">Histórico unificado de pagamentos confirmados e despesas operacionais da
+                  arena</p>
               </div>
               <div class="admin-filter-controls">
                 <select id="cashflowTypeFilter" class="select-compact">
@@ -606,7 +625,8 @@
           <!-- Right: Register Expense or Extra Income Form -->
           <div class="card-surface section-padding">
             <h3><i data-lucide="receipt" class="inline-icon text-orange"></i> Registrar Despesa ou Entrada Extra</h3>
-            <p class="section-subtitle">Lance contas de energia, manutenção da areia, compra de bolas, água ou receitas de bar/aluguel de raquete.</p>
+            <p class="section-subtitle">Lance contas de energia, manutenção da areia, compra de bolas, água ou receitas
+              de bar/aluguel de raquete.</p>
 
             <form id="cashflowEntryForm" class="mt-4">
               <div class="form-group">
@@ -625,7 +645,8 @@
 
               <div class="form-group">
                 <label for="txDescription">Descrição *</label>
-                <input type="text" id="txDescription" required placeholder="Ex: Conta de Energia LED / Manutenção Areia">
+                <input type="text" id="txDescription" required
+                  placeholder="Ex: Conta de Energia LED / Manutenção Areia">
               </div>
 
               <div class="form-row-2">
@@ -799,7 +820,8 @@
           <label for="adminPasswordInput">Senha do Administrador *</label>
           <div class="input-with-icon">
             <i data-lucide="key-round"></i>
-            <input type="password" id="adminPasswordInput" required placeholder="Digite a senha de acesso..." autocomplete="current-password">
+            <input type="password" id="adminPasswordInput" required placeholder="Digite a senha de acesso..."
+              autocomplete="current-password">
           </div>
         </div>
         <div id="adminAuthError" class="form-error-msg hidden">
@@ -832,4 +854,5 @@
 
   <script src="app.js"></script>
 </body>
+
 </html>
